@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Dr. Sarah Johnson",
+    "specialization": "Cardiologist",
+    "availability": {
+      "Monday": "9:00 AM - 2:00 PM",
+      "Wednesday": "10:00 AM - 3:00 PM",
+      "Friday": "11:00 AM - 4:00 PM"
+    },
+    "hospital": "City Heart Clinic"
+  },
+  {
+    "name": "Dr. James Smith",
+    "specialization": "Dermatologist",
+    "availability": {
+      "Tuesday": "8:00 AM - 1:00 PM",
+      "Thursday": "9:00 AM - 12:00 PM",
+      "Saturday": "10:00 AM - 2:00 PM"
+    },
+    "hospital": "Skin Care Hospital"
+  },
+  {
+    "name": "Dr. Emily Brown",
+    "specialization": "Pediatrician",
+    "availability": {
+      "Monday": "10:00 AM - 3:00 PM",
+      "Thursday": "9:00 AM - 1:00 PM",
+      "Friday": "12:00 PM - 4:00 PM"
+    },
+    "hospital": "Children's Hospital"
+  }
+]
