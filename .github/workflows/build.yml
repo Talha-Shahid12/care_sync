@@ -23,6 +23,17 @@ jobs:
         with:
           flutter-version: "3.24.5" # Specify the Flutter version you are using
 
+      # Install Java 17
+      - name: Install Java 17
+        run: |
+          sudo apt update
+          sudo apt install openjdk-17-jdk -y
+          java -version  # Verify the Java version
+
+      # Set JAVA_HOME environment variable
+      - name: Set JAVA_HOME environment variable
+        run: echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> $GITHUB_ENV
+
       # Install dependencies
       - name: Install dependencies
         run: flutter pub get
@@ -33,7 +44,7 @@ jobs:
 
       # Upload the APK as an artifact
       - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: CareSync
           path: build/app/outputs/flutter-apk/app-release.apk
