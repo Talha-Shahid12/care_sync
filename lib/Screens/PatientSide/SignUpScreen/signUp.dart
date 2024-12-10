@@ -1,5 +1,6 @@
+import 'package:care_sync/Screens/PatientSide/SignUpScreen/body.dart';
 import 'package:flutter/material.dart';
-import 'body.dart'; // Importing the body.dart file
+import 'package:google_fonts/google_fonts.dart';
 
 class SignUpPage extends StatelessWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -7,25 +8,37 @@ class SignUpPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Create Account',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Color(0xFFFF6720),
-        centerTitle: true, // This centers the title
-        leading: IconButton(
-          icon: Image.asset(
-            'assets/Images/backarrow.png',
-            width: 30,
-            height: 30,
-          ), // Replace with your image path
-          onPressed: () {
-            Navigator.pop(context); // You can add custom action here
-          },
+      backgroundColor: Colors.white,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(70.0), // Reduced height of the AppBar
+        child: ClipRRect(
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(30),
+            bottomRight: Radius.circular(30),
+          ),
+          child: AppBar(
+            automaticallyImplyLeading: false,
+            title: Text(
+              'Register Account',
+              style: GoogleFonts.montserrat(
+                fontSize: 20,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            backgroundColor: Color(0xFF29A5D6), //#29A5D6//
+            centerTitle: true,
+          ),
         ),
       ),
-      body: SignUpBody(),
+      body: Column(
+        children: [
+          // Body content
+          Expanded(
+            child: SignUpBody(),
+          ),
+        ],
+      ),
     );
   }
 }

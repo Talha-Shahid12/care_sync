@@ -1,10 +1,9 @@
 import 'package:care_sync/Components/customDrawer.dart';
-import 'package:care_sync/Screens/PatientSide/AppointmentHistoryScreen/body.dart';
-import 'package:care_sync/Screens/PatientSide/ShowAvailableDoctorScreen/body.dart';
 import 'package:flutter/material.dart';
+import 'body.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class AvailableDoctors extends StatelessWidget {
+class DoctorAppointmentsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,12 +25,13 @@ class AvailableDoctors extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            backgroundColor: Color(0xFF29A5D6), //#29A5D6//
+            backgroundColor: Color(0xFF29A5D6), //Color(0xFF29A5D6)
             centerTitle: true,
             leading: Builder(
               builder: (BuildContext context) {
                 return IconButton(
-                  icon: Icon(Icons.menu,
+                  icon: Icon(
+                    Icons.menu,
                     color: Colors.white,
                   ),
                   onPressed: () {
@@ -47,7 +47,7 @@ class AvailableDoctors extends StatelessWidget {
         children: [
           // Body content
           Expanded(
-            child: DoctorsListBody(),
+            child: AppointmentsBody(),
           ),
         ],
       ),

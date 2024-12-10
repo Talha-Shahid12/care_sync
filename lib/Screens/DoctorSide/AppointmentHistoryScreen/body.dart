@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class AppointmentHistoryBody extends StatefulWidget {
+class DoctorAppointmentHistoryBody extends StatefulWidget {
   @override
-  _AppointmentHistoryBodyState createState() => _AppointmentHistoryBodyState();
+  _DoctorAppointmentHistoryBodyState createState() =>
+      _DoctorAppointmentHistoryBodyState();
 }
 
-class _AppointmentHistoryBodyState extends State<AppointmentHistoryBody>
+class _DoctorAppointmentHistoryBodyState
+    extends State<DoctorAppointmentHistoryBody>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String selectedTab = "Scheduled";
@@ -20,7 +22,7 @@ class _AppointmentHistoryBodyState extends State<AppointmentHistoryBody>
   List<dynamic> scheduledAppointments = [];
   List<dynamic> completedAppointments = [];
   final apiCalls = ApiCalls();
-  String? patientId;
+  String? doctorId;
 
   Future<void> loadAppointments() async {
     setState(() {
@@ -30,31 +32,43 @@ class _AppointmentHistoryBodyState extends State<AppointmentHistoryBody>
 
     if (token != null) {
       try {
-        final result = await apiCalls.getAppointment(patientId!, token!);
+        final result =
+            await apiCalls.getAppointmentsHistoryForDoctor(doctorId!, token!);
 
         if (result["success"] == true) {
           final List<dynamic> appointmentList = result["message"];
-          setState(() {
-            scheduledAppointments = appointmentList
-                .where((appointment) => appointment["status"] == "SCHEDULED")
-                .toList();
-            completedAppointments = appointmentList
-                .where((appointment) => appointment["status"] == "COMPLETED")
-                .toList();
-            isLoading = false;
-          });
+
+          // Check if the widget is still mounted before calling setState
+          if (mounted) {
+            setState(() {
+              scheduledAppointments = appointmentList
+                  .where((appointment) => appointment["status"] == "SCHEDULED")
+                  .toList();
+              completedAppointments = appointmentList
+                  .where((appointment) => appointment["status"] == "COMPLETED")
+                  .toList();
+              isLoading = false;
+            });
+          }
         } else {
           print("[Error]: ${result["message"]}");
+
+          // Check if the widget is still mounted before calling setState
+          if (mounted) {
+            setState(() {
+              errorMessage = result["message"];
+              isLoading = false;
+            });
+          }
+        }
+      } catch (error) {
+        // Check if the widget is still mounted before calling setState
+        if (mounted) {
           setState(() {
-            errorMessage = result["message"];
+            errorMessage = "An error occurred: $error";
             isLoading = false;
           });
         }
-      } catch (error) {
-        setState(() {
-          errorMessage = "An error occurred: $error";
-          isLoading = false;
-        });
       }
     }
   }
@@ -69,13 +83,8 @@ class _AppointmentHistoryBodyState extends State<AppointmentHistoryBody>
   void didChangeDependencies() {
     super.didChangeDependencies();
     token = StoreProvider.of<AppState>(context).state.token;
-    patientId = StoreProvider.of<AppState>(context).state.patientId;
+    doctorId = StoreProvider.of<AppState>(context).state.doctorId;
     loadAppointments();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   @override
@@ -83,12 +92,9 @@ class _AppointmentHistoryBodyState extends State<AppointmentHistoryBody>
     return isLoading
         ? Center(
             child: Container(
-              color: Colors.white, //.withOpacity(0.5), // Dim background
-              child: const Center(
-                child: CircularProgressIndicator(color: Color(0xFF29A5D6)),
-              ),
-            ),
-          )
+                child: CircularProgressIndicator(
+            color: Color(0xFF29A5D6),
+          )))
         : Container(
             color: Colors.white,
             child: Column(
@@ -118,7 +124,10 @@ class _AppointmentHistoryBodyState extends State<AppointmentHistoryBody>
                               });
                             },
                           ),
-                          Text("Scheduled", style: GoogleFonts.montserrat()),
+                          Text(
+                            "Scheduled",
+                            style: GoogleFonts.montserrat(),
+                          ),
                         ],
                       ),
                       Row(
@@ -136,7 +145,10 @@ class _AppointmentHistoryBodyState extends State<AppointmentHistoryBody>
                               });
                             },
                           ),
-                          Text("Completed", style: GoogleFonts.montserrat()),
+                          Text(
+                            "Completed",
+                            style: GoogleFonts.montserrat(),
+                          ),
                         ],
                       ),
                     ],
@@ -163,10 +175,7 @@ class _AppointmentHistoryBodyState extends State<AppointmentHistoryBody>
       return Center(
         child: Text(
           "No appointments",
-          style: GoogleFonts.montserrat(
-              fontSize: 16,
-              color: Color(0xFF29A5D6),
-              fontWeight: FontWeight.bold),
+          style: GoogleFonts.montserrat(fontSize: 16, color: Color(0xFF29A5D6)),
         ),
       );
     }
@@ -175,7 +184,7 @@ class _AppointmentHistoryBodyState extends State<AppointmentHistoryBody>
       itemBuilder: (context, index) {
         final appointment = scheduledAppointments[index];
         return Card(
-          margin: EdgeInsets.all(16.0),
+          margin: EdgeInsets.all(10.0),
           elevation: 8.0, // Increase shadow intensity
           color: Color(0xFFEEEEEE), // Light gray color for card
           shape: RoundedRectangleBorder(
@@ -187,13 +196,13 @@ class _AppointmentHistoryBodyState extends State<AppointmentHistoryBody>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Dr. ${appointment['doctorName']}",
+                  "Mr/Ms. ${appointment['patientName']}",
                   style: GoogleFonts.montserrat(
                       fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 5),
                 Text(
-                  appointment['hospitalName'],
+                  appointment['contactNumber'],
                   style: GoogleFonts.montserrat(
                       fontSize: 16,
                       color: Colors.grey[700],
@@ -223,10 +232,7 @@ class _AppointmentHistoryBodyState extends State<AppointmentHistoryBody>
       return Center(
         child: Text(
           "No appointments",
-          style: GoogleFonts.montserrat(
-              fontSize: 16,
-              color: Color(0xFF29A5D6),
-              fontWeight: FontWeight.bold),
+          style: GoogleFonts.montserrat(fontSize: 16, color: Color(0xFF29A5D6)),
         ),
       );
     }
@@ -248,13 +254,13 @@ class _AppointmentHistoryBodyState extends State<AppointmentHistoryBody>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Dr. ${appointment['doctorName']}",
+                  "Mr/Ms. ${appointment['patientName']}",
                   style: GoogleFonts.montserrat(
                       fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 5),
                 Text(
-                  appointment['hospitalName'],
+                  appointment['contactNumber'],
                   style: GoogleFonts.montserrat(
                       fontSize: 16,
                       color: Colors.grey[700],

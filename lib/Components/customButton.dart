@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CustomButton extends StatelessWidget {
   final VoidCallback onPressed;
@@ -10,7 +11,7 @@ class CustomButton extends StatelessWidget {
     required this.onPressed,
     required this.buttonText,
     this.width = double.infinity, // Default to full width
-    this.backgroundColor = const Color(0xFFFF6720), // Default color
+    this.backgroundColor = const Color(0xFF29A5D6), // Default color
   });
 
   @override
@@ -27,7 +28,8 @@ class CustomButton extends StatelessWidget {
         ),
         child: Text(
           buttonText,
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: GoogleFonts.montserrat(
+              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
         ),
       ),
     );
