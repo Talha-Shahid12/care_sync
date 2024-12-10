@@ -1,3 +1,4 @@
+import 'package:care_sync/Components/cutomRetryButton.dart';
 import 'package:care_sync/Services/ApiCalls.dart';
 import 'package:care_sync/Services/redux/app_state.dart';
 import 'package:flutter/material.dart';
@@ -172,12 +173,29 @@ class _DoctorAppointmentHistoryBodyState
 
   Widget _buildScheduledTab() {
     if (scheduledAppointments.isEmpty) {
-      return Center(
-        child: Text(
-          "No appointments",
-          style: GoogleFonts.montserrat(fontSize: 16, color: Color(0xFF29A5D6)),
-        ),
-      );
+      return errorMessage != null
+          ? Center(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                  CustomRetryButton(
+                    onPressed: loadAppointments,
+                    buttonText: "↻ Retry",
+                    width: 100,
+                  ),
+                  Text(
+                    "Check your internet connection",
+                    style: GoogleFonts.montserrat(color: Colors.red),
+                  )
+                ]))
+          : Center(
+              child: Text(
+                "No appointments",
+                style: GoogleFonts.montserrat(
+                    fontSize: 16, color: Color(0xFF29A5D6)),
+              ),
+            );
     }
     return ListView.builder(
       itemCount: scheduledAppointments.length,
@@ -229,12 +247,29 @@ class _DoctorAppointmentHistoryBodyState
 
   Widget _buildCompletedTab() {
     if (completedAppointments.isEmpty) {
-      return Center(
-        child: Text(
-          "No appointments",
-          style: GoogleFonts.montserrat(fontSize: 16, color: Color(0xFF29A5D6)),
-        ),
-      );
+      return errorMessage != null
+          ? Center(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                  CustomRetryButton(
+                    onPressed: loadAppointments,
+                    buttonText: "↻ Retry",
+                    width: 100,
+                  ),
+                  Text(
+                    "Check your internet connection",
+                    style: GoogleFonts.montserrat(color: Colors.red),
+                  )
+                ]))
+          : Center(
+              child: Text(
+                "No appointments",
+                style: GoogleFonts.montserrat(
+                    fontSize: 16, color: Color(0xFF29A5D6)),
+              ),
+            );
     }
     return ListView.builder(
       itemCount: completedAppointments.length,

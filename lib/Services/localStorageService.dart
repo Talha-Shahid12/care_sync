@@ -128,6 +128,5 @@ class SessionStorage {
     await prefs.remove(emailKey);
     await prefs.remove(imageKey);
     await prefs.remove(fcmTokenKey);
-    await prefs.remove(baseUrlKey);
   }
 }

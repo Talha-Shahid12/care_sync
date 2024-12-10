@@ -1,4 +1,5 @@
 import 'package:care_sync/Components/customButton.dart';
+import 'package:care_sync/Components/cutomRetryButton.dart';
 import 'package:care_sync/Screens/DoctorSide/ShowAvailableAppointments/MedicalHistoryScreen/medicalHistoryScreen.dart';
 import 'package:care_sync/Services/ApiCalls.dart';
 import 'package:care_sync/Services/localStorageService.dart';
@@ -123,14 +124,27 @@ class _AppointmentsBodyState extends State<AppointmentsBody> {
               ),
             ),
           )
-        : errorMessage != null
-            ? Container(
-                color: Colors.white,
-                child: Center(
-                    child: Text(
-                  errorMessage!,
-                  style: GoogleFonts.montserrat(color: Color(0xFF29A5D6)),
-                )))
+        : scheduledAppointments.isEmpty
+            ? errorMessage != null
+                ? Center(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                        CustomRetryButton(
+                          onPressed: loadAppointments,
+                          buttonText: "↻ Retry",
+                          width: 100,
+                        ),
+                        Text(
+                          "Check your internet connection",
+                          style: GoogleFonts.montserrat(color: Colors.red),
+                        )
+                      ]))
+                : Center(
+                    child: Text("No Scheduled Appointments",
+                        style:
+                            GoogleFonts.montserrat(color: Color(0xFF29A5D6))))
             : Container(
                 color: Colors.white,
                 child: ListView.builder(

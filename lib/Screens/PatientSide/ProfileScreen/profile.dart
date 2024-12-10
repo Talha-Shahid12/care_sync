@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:care_sync/Components/customButton.dart';
 import 'package:care_sync/Components/customDrawer.dart';
+import 'package:care_sync/Components/cutomRetryButton.dart';
 import 'package:care_sync/Model/doctor.dart';
 import 'package:care_sync/Services/ApiCalls.dart';
 import 'package:care_sync/Services/localStorageService.dart';
@@ -358,122 +359,142 @@ class _PatientProfileScreenState extends State<PatientProfileScreen> {
                     ),
                   ),
                 )
-              : SingleChildScrollView(
-                  padding: EdgeInsets.all(16.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Stack(
+              : errorMessage != null
+                  ? Center(
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                          SizedBox(
+                            height: 200,
+                          ),
+                          CustomRetryButton(
+                            onPressed: loadInfo,
+                            buttonText: "↻ Retry",
+                            width: 100,
+                          ),
+                          Text(
+                            "Check your internet connection",
+                            style: GoogleFonts.montserrat(color: Colors.red),
+                          )
+                        ]))
+                  : SingleChildScrollView(
+                      padding: EdgeInsets.all(16.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          CircleAvatar(
-                            radius: 50,
-                            backgroundImage: imageBase64 != null &&
-                                    imageBase64!.isNotEmpty
-                                ? MemoryImage(base64Decode(imageBase64!))
-                                : AssetImage('assets/Images/doctor_avatar.jpg')
-                                    as ImageProvider,
-                          ),
-
-                          // Edit Icon positioned at top-right of the CircleAvatar
-                          Positioned(
-                            top: 0,
-                            right: 0,
-                            child: InkWell(
-                              onTap: _showImagePicker,
-                              child: Icon(
-                                Icons.camera_alt_rounded,
-                                color: Color(0xFF29A5D6),
-                                size: 30,
+                          Stack(
+                            children: [
+                              CircleAvatar(
+                                radius: 50,
+                                backgroundImage: imageBase64 != null &&
+                                        imageBase64!.isNotEmpty
+                                    ? MemoryImage(base64Decode(imageBase64!))
+                                    : AssetImage(
+                                            'assets/Images/doctor_avatar.jpg')
+                                        as ImageProvider,
                               ),
-                            ),
-                          ),
 
-                          // CircularProgressIndicator if isPicLoading is true
-                          if (isPicLoading)
-                            Positioned(
-                              child: CircularProgressIndicator(
-                                color: Colors.black,
+                              // Edit Icon positioned at top-right of the CircleAvatar
+                              Positioned(
+                                top: 0,
+                                right: 0,
+                                child: InkWell(
+                                  onTap: _showImagePicker,
+                                  child: Icon(
+                                    Icons.camera_alt_rounded,
+                                    color: Color(0xFF29A5D6),
+                                    size: 30,
+                                  ),
+                                ),
                               ),
-                              top: 30, // Adjust top position if needed
-                              left: 30, // Adjust left position if needed
+
+                              // CircularProgressIndicator if isPicLoading is true
+                              if (isPicLoading)
+                                Positioned(
+                                  child: CircularProgressIndicator(
+                                    color: Colors.black,
+                                  ),
+                                  top: 30, // Adjust top position if needed
+                                  left: 30, // Adjust left position if needed
+                                ),
+                            ],
+                          ),
+                          SizedBox(height: 50),
+                          _buildEditableField(
+                            label: "First Name",
+                            controller: _firstNameController,
+                            isEditable: isFirstNameEditable,
+                            onEditPressed: () {
+                              setState(() {
+                                isFirstNameEditable = true;
+                              });
+                              enableUpdateButton();
+                            },
+                          ),
+                          SizedBox(height: 16),
+                          _buildEditableField(
+                            label: "Last Name",
+                            controller: _lastNameController,
+                            isEditable: isLastNameEditable,
+                            onEditPressed: () {
+                              setState(() {
+                                isLastNameEditable = true;
+                              });
+                              enableUpdateButton();
+                            },
+                          ),
+                          SizedBox(height: 16),
+                          _buildReadOnlyField(
+                            label: "Email",
+                            value: _emailController.text,
+                          ),
+                          SizedBox(height: 16),
+                          _buildEditableField(
+                            label: "Contact Number",
+                            controller: _contactNumberController,
+                            isEditable: isContactNumberEditable,
+                            onEditPressed: () {
+                              setState(() {
+                                isContactNumberEditable = true;
+                              });
+                              enableUpdateButton();
+                            },
+                          ),
+                          SizedBox(height: 16),
+                          _buildEditableField(
+                            label: "Date of Birth",
+                            controller: _dateOfBirthController,
+                            isEditable: isDateOfBirthEditable,
+                            onEditPressed: () {
+                              setState(() {
+                                isDateOfBirthEditable = true;
+                              });
+                              enableUpdateButton();
+                            },
+                          ),
+                          SizedBox(height: 32),
+                          if (isUpdateButtonEnabled)
+                            Center(
+                              child: CustomButton(
+                                onPressed: () {
+                                  setState(() {
+                                    isFirstNameEditable = false;
+                                    isLastNameEditable = false;
+                                    isContactNumberEditable = false;
+                                    isDateOfBirthEditable = false;
+                                    isEmailEditable = false;
+                                    isUpdateButtonEnabled = false;
+                                  });
+                                  updateInfo();
+                                },
+                                width: 200,
+                                buttonText: "Update",
+                              ),
                             ),
                         ],
                       ),
-                      SizedBox(height: 50),
-                      _buildEditableField(
-                        label: "First Name",
-                        controller: _firstNameController,
-                        isEditable: isFirstNameEditable,
-                        onEditPressed: () {
-                          setState(() {
-                            isFirstNameEditable = true;
-                          });
-                          enableUpdateButton();
-                        },
-                      ),
-                      SizedBox(height: 16),
-                      _buildEditableField(
-                        label: "Last Name",
-                        controller: _lastNameController,
-                        isEditable: isLastNameEditable,
-                        onEditPressed: () {
-                          setState(() {
-                            isLastNameEditable = true;
-                          });
-                          enableUpdateButton();
-                        },
-                      ),
-                      SizedBox(height: 16),
-                      _buildReadOnlyField(
-                        label: "Email",
-                        value: _emailController.text,
-                      ),
-                      SizedBox(height: 16),
-                      _buildEditableField(
-                        label: "Contact Number",
-                        controller: _contactNumberController,
-                        isEditable: isContactNumberEditable,
-                        onEditPressed: () {
-                          setState(() {
-                            isContactNumberEditable = true;
-                          });
-                          enableUpdateButton();
-                        },
-                      ),
-                      SizedBox(height: 16),
-                      _buildEditableField(
-                        label: "Date of Birth",
-                        controller: _dateOfBirthController,
-                        isEditable: isDateOfBirthEditable,
-                        onEditPressed: () {
-                          setState(() {
-                            isDateOfBirthEditable = true;
-                          });
-                          enableUpdateButton();
-                        },
-                      ),
-                      SizedBox(height: 32),
-                      if (isUpdateButtonEnabled)
-                        Center(
-                          child: CustomButton(
-                            onPressed: () {
-                              setState(() {
-                                isFirstNameEditable = false;
-                                isLastNameEditable = false;
-                                isContactNumberEditable = false;
-                                isDateOfBirthEditable = false;
-                                isEmailEditable = false;
-                                isUpdateButtonEnabled = false;
-                              });
-                              updateInfo();
-                            },
-                            width: 200,
-                            buttonText: "Update",
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
+                    ),
         ],
       )),
     );

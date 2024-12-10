@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:care_sync/Components/customButton.dart';
+import 'package:care_sync/Components/cutomRetryButton.dart';
 import 'package:care_sync/Services/ApiCalls.dart';
 import 'package:care_sync/Services/localStorageService.dart';
 import 'package:care_sync/Services/redux/actions.dart';
@@ -262,7 +263,23 @@ class _DoctorsListBodyState extends State<DoctorsListBody> {
               ),
             )
           : doctors.isEmpty
-              ? Center(child: Text(errorMessage ?? "No doctors available"))
+              ? errorMessage != null
+                  ? Center(
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                          CustomRetryButton(
+                            onPressed: loadDoctors,
+                            buttonText: "↻ Retry",
+                            width: 100,
+                          ),
+                          Text(
+                            "Check your internet connection",
+                            style: GoogleFonts.montserrat(color: Colors.red),
+                          )
+                        ]))
+                  : Center(child: Text("No doctors available"))
               : ListView.builder(
                   itemCount: doctors.length,
                   itemBuilder: (context, index) {

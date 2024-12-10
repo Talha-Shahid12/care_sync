@@ -1,0 +1,39 @@
+name: Flutter Build APK
+
+on:
+  push:
+    branches:
+      - main # Trigger the build only when pushing to the 'main' branch
+  pull_request:
+    branches:
+      - main # Trigger on pull requests targeting the 'main' branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Check out the code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Set up Flutter
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.24.5" # Specify the Flutter version you are using
+
+      # Install dependencies
+      - name: Install dependencies
+        run: flutter pub get
+
+      # Run build command
+      - name: Build APK
+        run: flutter build apk --release
+
+      # Upload the APK as an artifact
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: app-release
+          path: build/app/outputs/flutter-apk/app-release.apk

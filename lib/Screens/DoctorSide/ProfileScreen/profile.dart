@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:care_sync/Components/customButton.dart';
 import 'package:care_sync/Components/customDrawer.dart';
+import 'package:care_sync/Components/cutomRetryButton.dart';
 import 'package:care_sync/Services/ApiCalls.dart';
 import 'package:care_sync/Services/localStorageService.dart';
 import 'package:care_sync/Services/redux/actions.dart';
@@ -374,179 +375,195 @@ class _DoctorProfileScreenState extends State<DoctorProfileScreen> {
                 child: CircularProgressIndicator(color: Color(0xFF29A5D6)),
               ),
             )
-          : SingleChildScrollView(
-              padding: EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  Stack(
+          : errorMessage != null
+              ? Center(
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                      CustomRetryButton(
+                        onPressed: loadInfo,
+                        buttonText: "↻ Retry",
+                        width: 100,
+                      ),
+                      Text(
+                        "Check your internet connection",
+                        style: GoogleFonts.montserrat(color: Colors.red),
+                      )
+                    ]))
+              : SingleChildScrollView(
+                  padding: EdgeInsets.all(16.0),
+                  child: Column(
                     children: [
-                      CircleAvatar(
-                        radius: 50,
-                        backgroundImage:
-                            imageBase64 != null && imageBase64!.isNotEmpty
+                      Stack(
+                        children: [
+                          CircleAvatar(
+                            radius: 50,
+                            backgroundImage: imageBase64 != null &&
+                                    imageBase64!.isNotEmpty
                                 ? MemoryImage(base64Decode(imageBase64!))
                                 : AssetImage('assets/Images/doctor_avatar.jpg')
                                     as ImageProvider,
-                      ),
-
-                      // Edit Icon positioned at top-right of the CircleAvatar
-                      Positioned(
-                        top: 0,
-                        right: 0,
-                        child: InkWell(
-                            onTap: _showImagePicker,
-                            child: Icon(
-                              Icons.camera_alt_rounded,
-                              color: Color(0xFF29A5D6),
-                            )),
-                      ),
-
-                      // CircularProgressIndicator if isPicLoading is true
-                      if (isPicLoading)
-                        Positioned(
-                          child: CircularProgressIndicator(
-                            color: Colors.black,
                           ),
-                          top: 30, // Adjust top position if needed
-                          left: 30, // Adjust left position if needed
+
+                          // Edit Icon positioned at top-right of the CircleAvatar
+                          Positioned(
+                            top: 0,
+                            right: 0,
+                            child: InkWell(
+                                onTap: _showImagePicker,
+                                child: Icon(
+                                  Icons.camera_alt_rounded,
+                                  color: Color(0xFF29A5D6),
+                                )),
+                          ),
+
+                          // CircularProgressIndicator if isPicLoading is true
+                          if (isPicLoading)
+                            Positioned(
+                              child: CircularProgressIndicator(
+                                color: Colors.black,
+                              ),
+                              top: 30, // Adjust top position if needed
+                              left: 30, // Adjust left position if needed
+                            ),
+                        ],
+                      ),
+
+                      SizedBox(height: 50),
+                      _buildEditableField(
+                        label: "First Name",
+                        controller: _firstNameController,
+                        isEditable: isFirstNameEditable,
+                        onEditPressed: () {
+                          setState(() {
+                            isFirstNameEditable = true;
+                          });
+                          enableUpdateButton();
+                        },
+                      ),
+                      SizedBox(height: 16),
+                      _buildEditableField(
+                        label: "Last Name",
+                        controller: _lastNameController,
+                        isEditable: isLastNameEditable,
+                        onEditPressed: () {
+                          setState(() {
+                            isLastNameEditable = true;
+                          });
+                          enableUpdateButton();
+                        },
+                      ),
+                      SizedBox(height: 16),
+                      _buildReadOnlyField(
+                        label: "Email",
+                        value: _emailController.text,
+                      ),
+                      SizedBox(height: 16),
+                      _buildEditableField(
+                        label: "Specialization",
+                        controller: _specializationController,
+                        isEditable: isSpecializationEditable,
+                        onEditPressed: () {
+                          setState(() {
+                            isSpecializationEditable = true;
+                          });
+                          enableUpdateButton();
+                        },
+                      ),
+                      SizedBox(height: 16),
+                      _buildEditableField(
+                        label: "Hospital Name",
+                        controller: _hospitalNameController,
+                        isEditable: isHospitalNameEditable,
+                        onEditPressed: () {
+                          setState(() {
+                            isHospitalNameEditable = true;
+                          });
+                          enableUpdateButton();
+                        },
+                      ),
+                      SizedBox(height: 16),
+                      _buildEditableField(
+                        label: "Consultation Fee",
+                        controller: _consultantFeeController,
+                        isEditable: isConsultationFeeEditable,
+                        onEditPressed: () {
+                          setState(() {
+                            isConsultationFeeEditable = true;
+                          });
+                          enableUpdateButton();
+                        },
+                      ),
+                      SizedBox(height: 16),
+                      // Display free hours list
+                      Text(
+                        "Free Hours",
+                        style: GoogleFonts.montserrat(
+                            fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      SizedBox(height: 10),
+                      // Separate Text Fields for Each Day
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: _freeHours.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 5),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    _freeHours[index]['Day']!,
+                                    style: GoogleFonts.montserrat(fontSize: 14),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: TextField(
+                                    controller: _freeHourControllers[
+                                        index], // Use the controller from the list
+                                    onChanged: (value) {
+                                      setState(() {
+                                        enableUpdateButton();
+                                        _freeHours[index]['Hours'] =
+                                            value; // Update the value in _freeHours
+                                      });
+                                    },
+                                    decoration: InputDecoration(
+                                      hintText: 'e.g., 10:00 AM - 12:00 PM',
+                                      border: OutlineInputBorder(),
+                                    ),
+                                    style: GoogleFonts.montserrat(
+                                        color: Colors.grey),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                      SizedBox(height: 32),
+                      if (isUpdateButtonEnabled)
+                        CustomButton(
+                          onPressed: () {
+                            setState(() {
+                              isFirstNameEditable = false;
+                              isLastNameEditable = false;
+                              isSpecializationEditable = false;
+                              isConsultationFeeEditable = false;
+                              isHospitalNameEditable = false;
+                              isUpdateButtonEnabled = false;
+                            });
+                            updateInfo();
+                          },
+                          width: 200,
+                          buttonText: "Update",
                         ),
                     ],
                   ),
-
-                  SizedBox(height: 50),
-                  _buildEditableField(
-                    label: "First Name",
-                    controller: _firstNameController,
-                    isEditable: isFirstNameEditable,
-                    onEditPressed: () {
-                      setState(() {
-                        isFirstNameEditable = true;
-                      });
-                      enableUpdateButton();
-                    },
-                  ),
-                  SizedBox(height: 16),
-                  _buildEditableField(
-                    label: "Last Name",
-                    controller: _lastNameController,
-                    isEditable: isLastNameEditable,
-                    onEditPressed: () {
-                      setState(() {
-                        isLastNameEditable = true;
-                      });
-                      enableUpdateButton();
-                    },
-                  ),
-                  SizedBox(height: 16),
-                  _buildReadOnlyField(
-                    label: "Email",
-                    value: _emailController.text,
-                  ),
-                  SizedBox(height: 16),
-                  _buildEditableField(
-                    label: "Specialization",
-                    controller: _specializationController,
-                    isEditable: isSpecializationEditable,
-                    onEditPressed: () {
-                      setState(() {
-                        isSpecializationEditable = true;
-                      });
-                      enableUpdateButton();
-                    },
-                  ),
-                  SizedBox(height: 16),
-                  _buildEditableField(
-                    label: "Hospital Name",
-                    controller: _hospitalNameController,
-                    isEditable: isHospitalNameEditable,
-                    onEditPressed: () {
-                      setState(() {
-                        isHospitalNameEditable = true;
-                      });
-                      enableUpdateButton();
-                    },
-                  ),
-                  SizedBox(height: 16),
-                  _buildEditableField(
-                    label: "Consultation Fee",
-                    controller: _consultantFeeController,
-                    isEditable: isConsultationFeeEditable,
-                    onEditPressed: () {
-                      setState(() {
-                        isConsultationFeeEditable = true;
-                      });
-                      enableUpdateButton();
-                    },
-                  ),
-                  SizedBox(height: 16),
-                  // Display free hours list
-                  Text(
-                    "Free Hours",
-                    style: GoogleFonts.montserrat(
-                        fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  SizedBox(height: 10),
-                  // Separate Text Fields for Each Day
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: _freeHours.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 5),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                _freeHours[index]['Day']!,
-                                style: GoogleFonts.montserrat(fontSize: 14),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: TextField(
-                                controller: _freeHourControllers[
-                                    index], // Use the controller from the list
-                                onChanged: (value) {
-                                  setState(() {
-                                    enableUpdateButton();
-                                    _freeHours[index]['Hours'] =
-                                        value; // Update the value in _freeHours
-                                  });
-                                },
-                                decoration: InputDecoration(
-                                  hintText: 'e.g., 10:00 AM - 12:00 PM',
-                                  border: OutlineInputBorder(),
-                                ),
-                                style:
-                                    GoogleFonts.montserrat(color: Colors.grey),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                  SizedBox(height: 32),
-                  if (isUpdateButtonEnabled)
-                    CustomButton(
-                      onPressed: () {
-                        setState(() {
-                          isFirstNameEditable = false;
-                          isLastNameEditable = false;
-                          isSpecializationEditable = false;
-                          isConsultationFeeEditable = false;
-                          isHospitalNameEditable = false;
-                          isUpdateButtonEnabled = false;
-                        });
-                        updateInfo();
-                      },
-                      width: 200,
-                      buttonText: "Update",
-                    ),
-                ],
-              ),
-            ),
+                ),
     );
   }
 
