@@ -10,7 +10,7 @@ class SignInPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(70.0), // Reduced height of the AppBar
+        preferredSize: Size.fromHeight(70.0),
         child: ClipRRect(
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(30),
